@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/phongvt2004/auth-service.git"
+    "url": "git+https://gitlab.com/m1367/auth-service.git"
   },
   "author": "Phong",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/phongvt2004/auth-service/issues"
+    "url": "https://gitlab.com/m1367/auth-service/issues"
   },
-  "homepage": "https://gitlab.com/phongvt2004/auth-service#readme",
+  "homepage": "https://gitlab.com/m1367/auth-service#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
