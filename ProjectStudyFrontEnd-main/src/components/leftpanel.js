@@ -56,11 +56,11 @@ const LeftPanel = (props) => {
                         </Link>
                     </li>
 
-                    {/* <li className={ location.pathname === "/chat" ? "active" : ""}>
-                        <Link to="/chat">
-                            <i className="fa fa-envelope-o"></i> <span>Tìm nhóm</span>
+                    <li className={ location.pathname === "/system-test" ? "active" : ""}>
+                        <Link to="/system-test">
+                            <i className="fa fa-book"></i> <span>Kiểm tra kiến thức</span>
                         </Link>
-                    </li> */}
+                    </li>
                     
                     <li className={navcurrent === "sample" ? "nav-parent nav-hover" : "nav-parent nav-active"}>
                         <a onClick={() => navcurrent === "sample" ? setNavcurrent("") : setNavcurrent("sample") }>
@@ -74,6 +74,9 @@ const LeftPanel = (props) => {
                             }
                         </ul>
                     </li>
+                    
+                    
+
                 </ul>
             </div>
         </div>

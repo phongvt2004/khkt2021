@@ -143,26 +143,6 @@ const EditTest = (props) => {
                                             onOk={() => formAddQuest.submit()}
                                         >
                                             <Form form={formAddQuest} onFinish={handleAddQuest2Test}>
-
-                                                <Form.Item name="class" label="Lớp" rules={[{ required: true, message: 'Nhập khối, lớp' }]}>
-                                                    <Select>
-                                                        {
-                                                            api.classes.map((val) => (
-                                                                <Select.Option value={val}>Lớp {val}</Select.Option>
-                                                            ))
-                                                        }
-                                                        <Select.Option value="all">All</Select.Option>
-                                                    </Select>
-                                                </Form.Item>
-                                                <Form.Item name="subject" label="Môn học" rules={[{ required: true, message: 'Chọn môn học' }]}>
-                                                    <Select>
-                                                        {
-                                                            api.list_sub.map((val) => (
-                                                                <Select.Option value={val}>{val}</Select.Option>
-                                                            ))
-                                                        }
-                                                    </Select>
-                                                </Form.Item>
                                                 <Form.Item name="question" label="Câu hỏi" rules={[{ required: true, message: 'Nhập câu hỏi' }]}>
                                                     <Input />
                                                 </Form.Item>

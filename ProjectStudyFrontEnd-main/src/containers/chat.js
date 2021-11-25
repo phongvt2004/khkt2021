@@ -1,4 +1,4 @@
-import { Spin, Avatar, Button, Tooltip, Popconfirm, message, Badge, Input, Image, Divider, Upload, Typography, Modal, Select, Form } from 'antd';
+import { Spin, Avatar, Button, Tooltip, Popconfirm, message, Badge, Input, Image, Divider, Upload, Typography, Modal, Select, Form, Row, Col } from 'antd';
 import { UserOutlined, DeleteOutlined, UsergroupAddOutlined, UploadOutlined, StarOutlined, LinkOutlined } from '@ant-design/icons';
 
 import axios from 'axios';
@@ -53,7 +53,7 @@ const Chat = (props) => {
             setImin(true)
         }
         setCurrent(ingroups.find(data => data._id === props.match.params.groupid))
-        // console.log(ingroups.find(data => data._id === props.match.params.groupid))
+        console.log("cureetn: ",ingroups.find(data => data._id === props.match.params.groupid))
     }, [ingroups, props.match.params.groupid])
 
     const handlegetGroupInfo = () => {
@@ -127,7 +127,7 @@ const Chat = (props) => {
             }
         }).then(res => res.data)
             .then(res => {
-                // console.log(res)
+                //console.log(res)
                 res.reverse()
                 setData(res)
                 scrollToBottom();
@@ -243,7 +243,7 @@ const Chat = (props) => {
             }
         }).then(res => res.data)
             .then(res => {
-                console.log(res)
+                // console.log(res)
                 setTestlist(res)
             })
             .catch(console.log)
@@ -259,13 +259,16 @@ const Chat = (props) => {
     }
 
     const handleSendTestRequest = (e) => {
-        console.log(socketnoti)
-        const db = {
+        const sdata = {
             groupId: props.match.params.groupid, 
             username: showChooseTest, 
             testId: e.testId,
+            createAt: new Date().toString(),
         }
-        socketnoti.emit("require do test", db)
+        // console.log(sdata)
+        socketnoti.emit('require do test', sdata)
+        message.success("Đã gửi yêu cầu làm bài test")
+        setShowChooseTest("")
     }
 
     //end socket stuffs
@@ -360,9 +363,10 @@ const Chat = (props) => {
                                                                     <Modal visible={showChooseTest}
                                                                         onCancel={() => setShowChooseTest("")}
                                                                         onOk={() => picktest.submit()}
+                                                                        title="Gửi yêu cầu làm test"
                                                                     >
                                                                         <Form form={picktest} onFinish={handleSendTestRequest} >
-                                                                            <Form.Item label="Chọn bài test" name="testId" initialValue="p">
+                                                                            <Form.Item label="Chọn bài test" name="testId" initialValue="">
                                                                                 <Select>
                                                                                     {
                                                                                         testlist.map(val => (
@@ -374,13 +378,25 @@ const Chat = (props) => {
                                                                         </Form>
                                                                     </Modal>
 
-                                                                    <ul className="dropdown-menu" style={{ minWidth: `${250}px`, "left": "-152px" }}>
+                                                                    <ul className="dropdown-menu" style={{ minWidth: `${250}px`, "left": "-152px", maxHeight: "500px", overflowY: "auto" }}>
                                                                         {
                                                                             current?.joinRequest.map((val) => (
                                                                                 <li style={{ paddingLeft: "10px" }}>
-                                                                                    <UserOutlined className="glyphicon glyphicon-tag mr5" /> {val.username} <Button onClick={() => handleAcceptToGroup(val.username)}>OK</Button> 
-                                                                                    <Button onClick={() => handleDenyToGroup(val.username)}>Deny</Button> 
-                                                                                    <Button onClick={() => handleSetTargetTest(val.username)}>Test</Button>
+                                                                                    <UserOutlined className="glyphicon glyphicon-tag mr5" /> {val.username} 
+                                                                                    <Row>
+                                                                                        <Col span={24}>
+                                                                                            {
+                                                                                                val.results !== "" ?
+                                                                                                "Kết quả test: " + val.results.point
+                                                                                                :
+                                                                                                ""
+                                                                                            }
+                                                                                        </Col>
+                                                                                        <Col span={8}><Button onClick={() => handleAcceptToGroup(val.username)}>OK</Button></Col>
+                                                                                        <Col span={8}><Button onClick={() => handleDenyToGroup(val.username)}>Deny</Button></Col>
+                                                                                        <Col span={8}><Button onClick={() => handleSetTargetTest(val.username)}>Test</Button></Col>
+                                                                                    </Row>
+                                                                                    <Divider />
                                                                                 </li>
                                                                             ))
                                                                         }
@@ -397,19 +413,7 @@ const Chat = (props) => {
                                                     }
                                                     
 
-                                                    {/* <div className="btn-group mr5">
-                                                        <button className="btn btn-sm btn-white" type="button"><i className="fa fa-reply"></i></button>
-                                                        <button data-toggle="dropdown" className="btn btn-sm btn-white dropdown-toggle" type="button">
-                                                            <span className="caret"></span>
-                                                        </button>
-                                                        <ul role="menu" className="dropdown-menu pull-right">
-                                                            <li><a >Reply to All</a></li>
-                                                            <li><a >Forward</a></li>
-                                                            <li><a >Print</a></li>
-                                                            <li><a >Delete Message</a></li>
-                                                            <li><a >Report Spam</a></li>
-                                                        </ul>
-                                                    </div> */}
+                                                    
 
                                                 </div>
 
@@ -422,7 +426,7 @@ const Chat = (props) => {
                                                 </div>
 
                                                 {/* messages */}
-                                                <div style={{ height: "50vh", overflowY: "auto" }} id="msges">
+                                                <div style={{ height: "48vh", overflowY: "auto" }} id="msges">
                                                     {
                                                         data.map((val) => (
                                                             <div className="read-panel">
@@ -441,7 +445,7 @@ const Chat = (props) => {
                                                                     </div>
                                                                 </div>
 
-                                                                <h4 className="email-subject" onLoad={scrollToBottom}>{
+                                                                <h4 className="email-subject" onLoad={scrollToBottom} style={{ lineBreak: "anywhere" }}>{
                                                                     val.type === "image" ?
                                                                         <Image src={val.message} width="200px" />
                                                                     :

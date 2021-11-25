@@ -5,9 +5,9 @@ import * as api from '../api';
 import * as actions from '../store/actions/auth';
 import PageHeader from '../components/pageheader'
 
-import { Spin, Button, Row, Col, Descriptions, message, Modal, Form, Input, Select, List, Skeleton, Avatar } from 'antd';
+import { Spin, Button, Row, Col, Descriptions, message, Modal, Form, Input, Select, List, Popover, Avatar } from 'antd';
 
-import { AppstoreAddOutlined, FileSearchOutlined, UsergroupAddOutlined, CommentOutlined } from '@ant-design/icons';
+import { AppstoreAddOutlined, FileSearchOutlined, UsergroupAddOutlined, CommentOutlined, EyeOutlined } from '@ant-design/icons';
 import { Bar } from 'react-chartjs-2';
 import { useAppContext } from '../state';
 import { Link } from 'react-router-dom';
@@ -31,50 +31,9 @@ const DashBoard = (props) => {
 
     const [groupsRes, setGroupsres] = useState([])
     const [friendRes, setFriendres] = useState([])
+    const [groupInfo, setGroupInfo] = useState(null)
 
     const [finding, setFinding] = useState(false)
-
-    //socket stuffs
-    // const [socket, setSocket] = useState(null);
-    // const [socketConnected, setSocketConnected] = useState(false);
-
-    // useEffect(() => {
-    //     setSocket(io(api.socket_chat))
-    // }, []);
-
-    // useEffect(() => {
-    //     if (!socket) return;
-
-    //     socket.on('connect', () => {
-    //         setSocketConnected(socket.connected);
-    //     });
-    //     socket.on('disconnect', () => {
-    //         setSocketConnected(socket.connected);
-    //     });
-
-    // }, [socket]);
-
-    // const handleSocketConnection = () => {
-    //     if (socketConnected)
-    //         socket.disconnect();
-    //     else {
-    //         socket.connect();
-    //     }
-    // }
-    // <div>
-    //     <div>
-    //         <b>Connection status:</b> {socketConnected ? 'Connected' : 'Disconnected'}
-    //     </div>
-    //     <input
-    //         type="button"
-    //         style={{ marginTop: 10 }}
-    //         value={socketConnected ? 'Disconnect' : 'Connect'}
-    //         onClick={handleSocketConnection} />
-    // </div>
-
-    //end socket stuffs
-
-
 
     const handleCreateGroup = (e) => {
         setFinding(true)
@@ -110,6 +69,40 @@ const DashBoard = (props) => {
             })
     }
 
+    const showGroupInfo = () => {
+
+        return (
+            <Spin spinning={groupInfo===null}>
+                <div>
+                    <p>Số member: {groupInfo?.memberIds.length}</p>
+                    <p>Môn học tốt: {groupInfo?.hasSubjects.join(", ")}</p>
+                    <p>Môn học yếu: {groupInfo?.requiredSubjects.join(", ")}</p>
+                </div>
+            </Spin>
+        )
+    }
+
+    const handleGetGroupById = (e, id) => {
+        if (e)
+        {
+            console.log("groupid: ", id)
+            axios.get(api.api_group_user, {
+                params: {
+                    username: props.username,
+                    token: props.token,
+                    groupId: id
+                }
+            }).then(res => res.data)
+            .then(res => {
+                console.log("get gr: ", res)
+                setGroupInfo(res)
+            })
+            .catch(console.log)
+        } else {
+            setGroupInfo(null)
+        }
+    }
+
     const handleFindGroup = (e) => {
         setFinding(true)
         axios.get(api.api_search_group, {
@@ -121,7 +114,7 @@ const DashBoard = (props) => {
         }).then(res => res.data)
             .then(res => {
                 setFriendres([])
-                if (typeof(res) === "object") {
+                if (typeof (res) === "object") {
                     setGroupsres(res)
                 } else {
                     message.error("Không tồn tại nhóm này.")
@@ -186,24 +179,53 @@ const DashBoard = (props) => {
                 token: props.token
             }
         }).then(res => res.data)
-        .then(res => {
-            if (typeof(res) === "object") {
-                if (res.success)
-                {
-                    setWtgroups(oldArray => [...oldArray, {
-                        _id: groupId,
-                        name: groupName
-                    }]);
-                    message.success("Đã gửi yêu cầu vào nhóm.")
+            .then(res => {
+                if (typeof (res) === "object") {
+                    if (res.success) {
+                        setWtgroups(oldArray => [...oldArray, {
+                            _id: groupId,
+                            name: groupName
+                        }]);
+                        message.success("Đã gửi yêu cầu vào nhóm.")
+                    } else {
+                        message.error("Xin vào nhóm thất bại")
+                    }
                 } else {
-                    message.error("Xin vào nhóm thất bại")
+                    message.error(res)
                 }
-            } else {
-                message.error(res)
-            }
-        })
-        .catch(() => {
-            message.error("Xin vào nhóm thất bại")
+            })
+            .catch(() => {
+                message.error("Xin vào nhóm thất bại")
+            })
+    }
+
+    useEffect(() => {
+        handleGetResultTest()
+    }, [])
+
+    const [dataResult, setDataResult] = useState([])
+
+    const handleGetResultTest = () => {
+        setDataResult([])
+        api.list_sub.map(val => {
+            axios.get(api.api_history_result, {
+                params: {
+                    username: props.username,
+                    token: props.token,
+                    subject: val
+                }
+            })
+            .then(res => res.data)
+            .then(res => {
+                if(res.length > 0)
+                {
+                    setDataResult(old => [...old, {
+                        "subject" : val,
+                        "points" : res.map(val => val.point).slice(-10)
+                    }])
+                }
+            })
+            .catch(console.log)
         })
     }
 
@@ -349,13 +371,21 @@ const DashBoard = (props) => {
                                                             itemLayout="horizontal"
                                                             dataSource={groupsRes}
                                                             renderItem={item => (
+
+                                                                
                                                                 <List.Item>
                                                                     <List.Item.Meta
                                                                         avatar={<Avatar icon={<CommentOutlined />} />}
-                                                                        title={<b>{item.groupName}</b>}
+                                                                        title={
+                                                                            <b>{item.groupName}</b>
+                                                                        }
                                                                     />
+                                                                    <Popover onVisibleChange={(e) => handleGetGroupById(e, item.groupId)} content={showGroupInfo} title={"Thông tin nhóm: " + item.groupName}>
+                                                                        <EyeOutlined style={{ width: "50px" }}/>
+                                                                    </Popover>                                               
                                                                     <Button type="primary" onClick={() => handleRequestJoinGroup(item.groupId, item.groupName)}>Xin vào</Button>
                                                                 </List.Item>
+
                                                             )}
                                                         />
                                                         :
@@ -375,30 +405,34 @@ const DashBoard = (props) => {
                                                             />
                                                             :
                                                             <Row gutter={[16, 16]}>
-                                                                <Col className="gutter-row" span={24}>
-                                                                    <Descriptions title="Toán" bordered>
-                                                                        <Descriptions.Item label="Kết quả gần đây">9 điểm</Descriptions.Item>
-                                                                        <Descriptions.Item label="Thời gian làm bài" span={2}>20 phút</Descriptions.Item>
-                                                                        <Descriptions.Item label="Biểu đồ kết quả" span={3}>
-                                                                            <Bar
-                                                                                data={{
-                                                                                    labels: ['T1', 'T2', 'T3', 'T4', 'T5'],
-                                                                                    datasets: [
-                                                                                        {
-                                                                                            label: 'Điểm',
-                                                                                            backgroundColor: 'rgba(75,192,192,1)',
-                                                                                            borderColor: 'rgba(0,0,0,1)',
-                                                                                            borderWidth: 1,
-                                                                                            data: [9, 8, 10, 8, 9]
-                                                                                        }
-                                                                                    ]
-                                                                                }}
-                                                                                height={150}
-                                                                                options={{ maintainAspectRatio: false }}
-                                                                            />
-                                                                        </Descriptions.Item>
-                                                                    </Descriptions>
-                                                                </Col>
+                                                                {
+                                                                    dataResult.map((val, index) => (
+                                                                        <Col className="gutter-row" span={24} key={`result-${index}`}>
+                                                                            <Descriptions title={val.subject} bordered>
+                                                                                <Descriptions.Item label="Kết quả gần đây">9 điểm</Descriptions.Item>
+                                                                                <Descriptions.Item label="Thời gian làm bài" span={2}>20 phút</Descriptions.Item>
+                                                                                <Descriptions.Item label="Biểu đồ kết quả" span={3}>
+                                                                                    <Bar
+                                                                                        data={{
+                                                                                            labels: ['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8', 'L9', 'L10'],
+                                                                                            datasets: [
+                                                                                                {
+                                                                                                    label: 'Điểm',
+                                                                                                    backgroundColor: 'rgba(75,192,192,1)',
+                                                                                                    borderColor: 'rgba(0,0,0,1)',
+                                                                                                    borderWidth: 1,
+                                                                                                    data: val.points
+                                                                                                }
+                                                                                            ]
+                                                                                        }}
+                                                                                        height={150}
+                                                                                        options={{ maintainAspectRatio: false }}
+                                                                                    />
+                                                                                </Descriptions.Item>
+                                                                            </Descriptions>
+                                                                        </Col>
+                                                                    ))
+                                                                }
                                                             </Row>
                                                 }
 

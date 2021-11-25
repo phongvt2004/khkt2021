@@ -27,8 +27,6 @@ const TestLayout = (props) => {
                             {/* <HeaderBar colapseleftmn={toggleleftmn} oncolapseleftmn={setToggleletmn} /> */}
                             {props.children}
                         </div>
-
-                        <RightPanel />
                     </React.Fragment>
                     :
                     <SignIn />

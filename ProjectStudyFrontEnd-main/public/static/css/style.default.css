@@ -70,6 +70,7 @@
 @import url('select2.css');
 @import url('lato.css');
 @import url('roboto.css');
+@import url('chatbox.css');
 
 
 /********** 2. RESET STYLES **********/
@@ -760,7 +761,7 @@ strong {
 .mainpanel {
     margin-left: 240px;
     background: #e4e7ea;
-    min-height: 1000px;
+    min-height: 100vh;
 }
 
 .pageheader {

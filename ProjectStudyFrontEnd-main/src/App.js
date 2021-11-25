@@ -22,7 +22,12 @@ class App extends Component {
             <AppWrapper>
                 <Router>
                     <Switch>
-                        <Route exact path="/group-test/:testid" render={() => (
+                        <Route exact path="/group-test/:testid/:groupid" render={() => (
+                            <TestLayout {...this.props}>
+                                <BaseRouter />
+                            </TestLayout>
+                        )} />
+                        <Route exact path="/system-test" render={() => (
                             <TestLayout {...this.props}>
                                 <BaseRouter />
                             </TestLayout>

@@ -29,8 +29,12 @@ export const api_member = `${member_service}/member`
 
 export const test_service = "http://103.90.229.216:30004"
 export const api_group_test_all = `${test_service}/group/test/all`
+export const api_group_test_id = `${test_service}/group/test/id`
+export const api_group_test_result = `${test_service}/group/result`
 export const api_group_test = `${test_service}/group/test`
 export const api_group_do_test = `${test_service}/group/dotest`
+export const api_system_test_get = `${test_service}/system/test`
+export const api_system_test_result = `${test_service}/system/result`
 
 
 export const question_service = "http://103.90.229.216:30003"
@@ -41,6 +45,8 @@ export const api_question_system = `${question_service}/system/question`
 
 
 export const history_service = "http://103.90.229.216:30007"
+export const api_history_oldtest = `${history_service}/test`
+export const api_history_result = `${history_service}/result/history`
 
 export const upload_service = "http://103.90.229.216:30010"
 export const api_upload_chat = `${upload_service}/upload/messages`
@@ -57,6 +63,7 @@ export const api_chat = `${chat_service}/chat`
 
 export const notify_service = "http://103.90.229.216:30011"
 export const api_notify = `${notify_service}/notify`
+export const api_notify_read = `${notify_service}/notify/isRead`
 
 export const search_service = "http://103.90.229.216:30013"
 export const api_search_group = `${search_service}/search/group`
