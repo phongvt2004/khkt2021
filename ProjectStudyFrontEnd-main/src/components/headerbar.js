@@ -41,6 +41,7 @@ const HeaderBar = (props) => {
 
 
     const handleGetUserInfo = () => {
+        setUserinfo({})
         axios.get(api.api_user_info, {
             params: {
                 username: props.username,
@@ -94,6 +95,7 @@ const HeaderBar = (props) => {
     const [notifies, setNotifies] = useState([])
 
     const handleGetAllNotifies = () => {
+        setNotifies([])
         axios.get(api.api_notify, {
             params: {
                 username: props.username,
@@ -104,7 +106,6 @@ const HeaderBar = (props) => {
             .then(res => {
                 res.reverse()
                 setNotifies(res)
-                console.log("noties: ", res)
             })
             .catch(console.log)
     }
@@ -116,7 +117,6 @@ const HeaderBar = (props) => {
             }
         }).then(res => res.data)
         .then(res => {
-            console.log(res)
             handleGetAllNotifies()
         })
         .catch(console.log)
@@ -249,7 +249,6 @@ const HeaderBar = (props) => {
                             <ul className="dropdown-menu dropdown-menu-usermenu pull-right">
                                 <li><Link to="/profile"><i className="glyphicon glyphicon-user"></i> Thông tin tài khoản</Link></li>
                                 <li><Link to="/settings"><i className="glyphicon glyphicon-cog"></i> Cài đặt</Link></li>
-                                <li><Link to="/FAQ"><i className="glyphicon glyphicon-question-sign"></i> FAQ</Link></li>
                                 <li><a onClick={handleLogout}><i className="glyphicon glyphicon-log-out"></i> Đăng xuất</a></li>
                             </ul>
                         </div>

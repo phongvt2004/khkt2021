@@ -4,10 +4,16 @@ WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
 
-RUN yarn install
+ENV PORT=443
+
+RUN yarn
+
+RUN yarn add fs-extra
 
 COPY . .
 
-EXPOSE 3011
+EXPOSE 80
 
-CMD ["yarn", "start"]
+EXPOSE 443
+
+CMD ["node", "index.js"]

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <div class="login">
+        <h2>Login</h2>
+        <p>Username</p>
+        <input type="text" name="username">
+        <p>Password</p>
+        <input type="password" name="password"><br/>
+        <button>Login</button>
+    </div>
+    <p>Nhom cua ban</p>
+    <select class="my-group">
+        <option value="">none</option>
+    </select>
+    <p>Tao nhom</p>
+    <input type="text" id="group-name">
+    <input type="text" id="class">
+    <button type="submit" id="create-group">Tao nhom</button>
+    <p>Tin nhan</p>
+    <ul id="messages">
+    </ul>
+    <input type="text" id="input-message">
+    <input type="file" class="files" multiple>
+    <button type="submit" class="send-message">Gui</button>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./main.js"></script>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
+    <script type="module" src="./chat.js"></script>
+</body>
+</html>

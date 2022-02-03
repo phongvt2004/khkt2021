@@ -7,6 +7,10 @@ const Chats = new Schema(
         sender: {type: String, required: true},
         message: {type: String, required: true},
         type: {type: String, required: true},
+        time: {type: String, required: true}
+    }, 
+    {
+        timestamps: true,
     }
 )
 

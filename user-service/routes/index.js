@@ -1,9 +1,25 @@
-const apiRoute = require('./apiRoute');
+const UserController = require('../app/controllers/UserController')
+const {checkUser} = require('../app/middlewares/checkUser')
 function route(app) {
-    app.use('/api', apiRoute)
-    // app.get('/', (req, res, next) => {
-    //     res.send('home')
-    // })
+    app.get('/users/info', checkUser, UserController.getUserInfo)
+    app.get('/users/status',  checkUser, UserController.getUserStatus)
+    app.get('/users/by/username', UserController.getUserByUsername)
+    app.get('/view/user', UserController.getViewUser)
+    app.post('/users/status', UserController.createUserStatus)
+    app.put('/users/status', UserController.updateUserStatus)
+    app.put('/users/info', checkUser, UserController.updateUserInfo)
+    app.patch('/users/status', checkUser, UserController.updateUserStatus)
+    app.delete('/users/status', UserController.updateUserStatus)
+    app.get('/users/server', UserController.getUser)
+    app.get('/users/email', UserController.getUserByEmail)
+    app.get('/users', checkUser, UserController.getUser)
+    app.post('/add/group', UserController.addToGroup)
+    app.patch('/add/good/subject', checkUser, UserController.addGoodSubject)
+    app.patch('/add/bad/subject', checkUser, UserController.addBadSubject)
+    app.patch('/add/history', UserController.addHistory)
+    app.patch('/users/add/waitGroup', UserController.addWaitGroup)
+    app.get('/users/goodAt', UserController.getGoodAt)
+    app.get('/users/badAt', UserController.getBadAt)
 }
 
 module.exports = route;

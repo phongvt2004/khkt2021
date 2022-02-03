@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express();
-const path = require('path');
 const cors = require('cors');
-const port = 3009;
-const ChatController = require('./app/controllers/ChatController')
-const KafkaController = require('./app/controllers/KafkaController')
-app.use('/api', cors())
+require('dotenv').config({
+    path: '.env.example'
+})
+const port = process.env.PORT || 3011;
+app.use('/', cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -16,14 +16,12 @@ const db = require('./config/db');
 db.connect();
 route(app);
 
-KafkaController.consumer('createChatMessage')
-  .then(message => {
-    ChatController.createChatMessage(message.value)
-  })
 
-KafkaController.consumer('deleteChatMessage')
-  .then(message => {
-    ChatController.deleteChatMessage(message.value)
-  })
-
-app.listen(port)
+const https = require('https');
+const fs = require('fs-extra');
+var options = {
+    key: fs.readFileSync('./client-key.pem'),
+    cert: fs.readFileSync('./client-cert.pem')
+};
+var http = require('http');
+http.createServer(app).listen(port);

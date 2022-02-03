@@ -8,7 +8,8 @@ const initialState = {
     userId: "",
     change: 0, 
     loading: false,
-    info: null
+    info: null,
+    verifyemail: false
 }
 
 const authStart = (state, action) => {
@@ -56,7 +57,8 @@ const resetError = (state, action) => {
 
 const updateInfo = (state, action) => {
     return updateObject(state, {
-        info: action.info
+        info: action.info,
+        loading: false
     });
 } 
 

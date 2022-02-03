@@ -1,9 +1,14 @@
-const apiRoute = require('./apiRoute');
+const MemberController = require('../app/controllers/MemberController')
+const checkLeader = require('../app/middlewares/checkLeader')
+const {checkUser} = require('../app/middlewares/checkUser')
 function route(app) {
-    app.use('/api', apiRoute)
-    // app.get('/', (req, res, next) => {
-    //     res.send('home')
-    // })
+    app.get('/member', checkUser, MemberController.getMemberList)
+    app.post('/member', checkUser, checkLeader, MemberController.addMember)
+    app.delete('/member/delete-all', checkUser, checkLeader, MemberController.deleteAllMember)
+    app.delete('/member', checkUser, MemberController.deleteMember)
+    app.get('/', (req, res) => {
+        res.json('member')
+    })
 }
 
 module.exports = route;

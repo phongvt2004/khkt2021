@@ -1,11 +1,18 @@
 FROM node:14-alpine
 
-WORKDIR /app/service/auth
+WORKDIR /usr/src/app
+
+COPY package.json yarn.lock ./
+
+ENV PORT=80
+
+RUN yarn
+
+RUN yarn add fs-extra
 
 COPY . .
 
-RUN yarn install
+EXPOSE 80
+EXPOSE 443
 
-EXPOSE 3001
-
-CMD ["yarn", "start"]
+CMD ["node", "index.js"]

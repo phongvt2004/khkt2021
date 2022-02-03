@@ -7,6 +7,7 @@ import * as actions from '../store/actions/auth';
 import PageHeader from '../components/pageheader'
 import { Link, useLocation } from 'react-router-dom'
 import { useAppContext } from '../state';
+import Latext from 'react-latex';
 
 const GroupTest = (props) => {
 
@@ -133,9 +134,7 @@ const GroupTest = (props) => {
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <Typography.Title level={3}>
-                                                {
-                                                    testlist[index]?.question
-                                                }
+                                                <Latext>{`${testlist[index]?.question}`}</Latext>
                                             </Typography.Title>
                                             {
                                                 testlist[index]?.image !== "" ?
@@ -147,10 +146,10 @@ const GroupTest = (props) => {
                                         <div class="modal-body">
                                             <Radio.Group onChange={(e) => handleSetAnswer(testlist[index]?._id, e.target.value)} defaultValue={value} value={answer.find(x => x.questionId === testlist[index]?._id)?.answer}>
                                                 <Row>
-                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "A"} value="A">A. {testlist[index]?.A}</Radio></Col>
-                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "B"} value="B">B. {testlist[index]?.B}</Radio></Col>
-                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "C"} value="C">C. {testlist[index]?.C}</Radio></Col>
-                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "D"} value="D">D. {testlist[index]?.D}</Radio></Col>
+                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "A"} value="A">A. <Latext>{`${testlist[index]?.A}`}</Latext></Radio></Col>
+                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "B"} value="B">B. <Latext>{`${testlist[index]?.B}`}</Latext></Radio></Col>
+                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "C"} value="C">C. <Latext>{`${testlist[index]?.C}`}</Latext></Radio></Col>
+                                                    <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "D"} value="D">D. <Latext>{`${testlist[index]?.D}`}</Latext></Radio></Col>
                                                 </Row>
 
                                             </Radio.Group>

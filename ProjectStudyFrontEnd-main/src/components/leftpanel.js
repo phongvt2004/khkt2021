@@ -61,6 +61,12 @@ const LeftPanel = (props) => {
                             <i className="fa fa-book"></i> <span>Kiểm tra kiến thức</span>
                         </Link>
                     </li>
+
+                    <li className={ location.pathname === "/history" ? "active" : ""}>
+                        <Link to="/history">
+                            <i className="fa fa-book"></i> <span>Lịch sử làm bài</span>
+                        </Link>
+                    </li>
                     
                     <li className={navcurrent === "sample" ? "nav-parent nav-hover" : "nav-parent nav-active"}>
                         <a onClick={() => navcurrent === "sample" ? setNavcurrent("") : setNavcurrent("sample") }>

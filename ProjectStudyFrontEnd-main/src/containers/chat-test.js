@@ -11,6 +11,11 @@ import { useAppContext } from '../state';
 import { Link, useLocation } from 'react-router-dom'
 import io from "socket.io-client";
 
+//time
+import TimeAgo from 'react-timeago'
+import viStrings from 'react-timeago/lib/language-strings/vi'
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
+
 
 const { TextArea } = Input;
 
@@ -27,7 +32,9 @@ const ChatTest = (props) => {
 
     const [current, setCurrent] = useState(null)
 
+    const [keyCount, setKeyCount] = useState(0)
     const [groupInfo, setGroupInfo] = useState(null)
+    const formatter = buildFormatter(viStrings)
 
     const location = useLocation()
 
@@ -53,7 +60,7 @@ const ChatTest = (props) => {
             setImin(true)
         }
         setCurrent(ingroups.find(data => data._id === props.match.params.groupid))
-        // console.log(ingroups.find(data => data._id === props.match.params.groupid))
+        console.log("cureetn: ", ingroups.find(data => data._id === props.match.params.groupid))
     }, [ingroups, props.match.params.groupid])
 
     const handlegetGroupInfo = () => {
@@ -108,14 +115,13 @@ const ChatTest = (props) => {
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
-
     useEffect(() => {
         if (imin) {
             setSocket(io(api.socket_chat))
             handleGetAllChat()
             handlGetTestList()
         }
-    }, [imin]);
+    }, [imin, location]);
 
     const handleGetAllChat = () => {
         axios.get(api.api_chat, {
@@ -127,14 +133,13 @@ const ChatTest = (props) => {
             }
         }).then(res => res.data)
             .then(res => {
-                //console.log(res)
                 res.reverse()
                 setData(res)
-                scrollToBottom();
+                //scrollToBottom();
             })
             .catch(console.log)
     }
-
+    const messageEl = useRef(null);
 
     useEffect(() => {
         if (!socket) return;
@@ -156,9 +161,14 @@ const ChatTest = (props) => {
 
         socket.on('outputChatMessage', (data1) => {
             setData(oldArray => [...oldArray, data1])
-            scrollToBottom()
+            //scrollToBottom()
         });
-
+        if (messageEl) {
+            messageEl.current.addEventListener('DOMNodeInserted', event => {
+                const { currentTarget: target } = event;
+                target.scroll({ top: target.scrollHeight, behavior: 'smooth' });
+            });
+        }
 
     }, [socket]);
 
@@ -166,15 +176,19 @@ const ChatTest = (props) => {
 
     const handleSendMsg = () => {
         if (socketConnected == 2) {
-            socket.emit('inputChatMessage', {
-                groupId: props.match.params.groupid,
-                sender: props.username,
-                message: messag,
-                type: "text",
-                time: new Date().toString()
-            })
+            var removed_new_line = messag.replace(/[\n\r]/g, '').replace(" ", "").length
+            if (removed_new_line === 0) {
+                console.log("blank msg")
+            } else {
+                socket.emit('inputChatMessage', {
+                    groupId: props.match.params.groupid,
+                    sender: props.username,
+                    message: messag,
+                    type: "text",
+                    time: new Date().toString()
+                })
+            }
             setMessag("")
-            // console.log(msgfiles)
             msgfiles.map(e => {
                 socket.emit('inputChatMessage', {
                     groupId: props.match.params.groupid,
@@ -233,6 +247,7 @@ const ChatTest = (props) => {
     const [picktest] = Form.useForm()
 
     const handlGetTestList = () => {
+        setTestlist([])
         axios.get(api.api_group_test_all, {
             params: {
                 username: props.username,
@@ -241,7 +256,7 @@ const ChatTest = (props) => {
             }
         }).then(res => res.data)
             .then(res => {
-                console.log(res)
+                // console.log(res)
                 setTestlist(res)
             })
             .catch(console.log)
@@ -262,7 +277,7 @@ const ChatTest = (props) => {
             testId: e.testId,
             createAt: new Date().toString(),
         }
-        console.log(sdata)
+        // console.log(sdata)
         socketnoti.emit('require do test', sdata)
         message.success("Đã gửi yêu cầu làm bài test")
         setShowChooseTest("")
@@ -319,7 +334,6 @@ const ChatTest = (props) => {
         }
     }
 
-
     return (
         <React.Fragment>
             {
@@ -332,7 +346,7 @@ const ChatTest = (props) => {
                             <div className="contentpanel panel-email">
 
                                 <div className="row">
-                                    <div className="col-sm-12 col-lg-12">
+                                    <div className="col-sm-12 col-lg-12 chat">
 
                                         <div className="panel panel-default">
                                             <div className="panel-body">
@@ -381,6 +395,14 @@ const ChatTest = (props) => {
                                                                                     <li style={{ paddingLeft: "10px" }}>
                                                                                         <UserOutlined className="glyphicon glyphicon-tag mr5" /> {val.username}
                                                                                         <Row>
+                                                                                            <Col span={24}>
+                                                                                                {
+                                                                                                    val.results !== "" ?
+                                                                                                        "Kết quả test: " + val.results.point
+                                                                                                        :
+                                                                                                        ""
+                                                                                                }
+                                                                                            </Col>
                                                                                             <Col span={8}><Button onClick={() => handleAcceptToGroup(val.username)}>OK</Button></Col>
                                                                                             <Col span={8}><Button onClick={() => handleDenyToGroup(val.username)}>Deny</Button></Col>
                                                                                             <Col span={8}><Button onClick={() => handleSetTargetTest(val.username)}>Test</Button></Col>
@@ -400,42 +422,31 @@ const ChatTest = (props) => {
                                                             </React.Fragment>
                                                             : <></>
                                                     }
-
-
-
-
                                                 </div>
-                                                <div class="col-sm-9 col-xs-12 chat" style={{ overflow: "hidden", outline: "none" }} tabindex="5001">
-                                                    <div class="col-inside-lg decor-default">
-                                                        <div className="btn-group mr10">
-                                                            {/* <button className="btn btn-sm btn-white tooltips" type="button" data-toggle="tooltip" title="Read Next Email"><i className="glyphicon glyphicon-chevron-right"></i></button> */}
-                                                            <div className="btn tooltips">
-                                                                <b>Status:</b> {socketConnected === 0 ? <Badge status="default" /> : socketConnected === 1 ? <Badge size="default" status="success" /> : socketConnected === 2 ? <Badge status="default" status="processing" /> : <Badge status="default" />}
-                                                            </div>
-
+                                                <div class="col-inside-lg decor-default">
+                                                    <div className="btn-group mr10">
+                                                        {/* <button className="btn btn-sm btn-white tooltips" type="button" data-toggle="tooltip" title="Read Next Email"><i className="glyphicon glyphicon-chevron-right"></i></button> */}
+                                                        <div className="btn tooltips">
+                                                            <b>Status:</b> {socketConnected === 0 ? <Badge status="default" /> : socketConnected === 1 ? <Badge size="default" status="success" /> : socketConnected === 2 ? <Badge status="default" status="processing" /> : <Badge status="default" />}
                                                         </div>
 
-                                                        {/* messages */}
+                                                    </div>
 
-                                                        <div className="chat-body">
-                                                            <div style={{ height: "48vh", overflowY: "auto" }} id="msges">
-                                                                {//"http://super-uae.com/images/profile.png"
-
-                                                                    data.map((val) => (
-                                                                        <div className={JSON.parse(val.sender).username === props.username ?
-                                                                            "answer right"
-                                                                            :
-                                                                            "answer left"}>
-                                                                            <div className="avatar">
-                                                                                <img src={JSON.parse(val.sender).avatar === "" ?
-                                                                                    "http://super-uae.com/images/profile.png"
-                                                                                    :
-                                                                                    JSON.parse(val.sender).avatar} alt="User name"></img>
-                                                                                {/*trang thai hoat dong*/}
-                                                                                <div className="status online"></div>
-                                                                            </div>
-                                                                            <div className="name">{JSON.parse(val.sender).fullname}</div>
-                                                                            <div className="text" onLoad={scrollToBottom}>{
+                                                    <div className="chat-body">
+                                                        <div style={{ height: "48vh", overflowY: "auto" }} id="msges" ref={messageEl}>
+                                                            {
+                                                                data.map((val) => (
+                                                                    <div className={JSON.parse(val.sender).username === props.username ? "answer right" : "answer left"}>
+                                                                        <div className="avatar">
+                                                                            <img src={JSON.parse(val.sender).avatar === "" ?
+                                                                                "http://super-uae.com/images/profile.png"
+                                                                                :
+                                                                                JSON.parse(val.sender).avatar} alt="User name"></img>
+                                                                            {/* <div className="status online"></div> */}
+                                                                        </div>
+                                                                        <div className="name"><Link to={`/user/${JSON.parse(val.sender).username}`}>{JSON.parse(val.sender).fullname}</Link></div>
+                                                                        <h4 className="text" style={{ lineBreak: "anywhere" }}>
+                                                                            {
                                                                                 val.type === "image" ?
                                                                                     <Image src={val.message} width="200px" />
                                                                                     :
@@ -445,43 +456,53 @@ const ChatTest = (props) => {
                                                                                         </Typography.Link>
                                                                                         :
                                                                                         val.type === "video" ?
-                                                                                            <video width="400" controls onLoad={scrollToBottom}>
+                                                                                            <video width="400" controls>
                                                                                                 <source src={val.message} />
                                                                                             </video>
                                                                                             :
                                                                                             val.message
+                                                                            }
+                                                                        </h4>
+                                                                        <div className="time" style={{ fontSize: "10px" }}>
+                                                                            {
+                                                                                <TimeAgo date={val.time} formatter={formatter} />
+                                                                                //val.time.slice(0,24)
                                                                             }</div>
-                                                                            <div className="time">5 min ago</div>
-                                                                        </div>
-                                                                    ))
-                                                                }
-                                                                <div ref={messagesEndRef} />
-                                                            </div>
-                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            }
 
-                                                        {/* send message */}
-                                                        <div className="read-panel">
-                                                            <div className="media">
-                                                                <a className="pull-left">
-                                                                    <Avatar size={26} icon={<UserOutlined />} style={{ marginRight: "5px" }} />
-                                                                </a>
-                                                                <div className="media-body">
-                                                                    <Input.TextArea value={messag} rows={2} onChange={(e) => setMessag(e.target.value)} onKeyUp={(e) => {
-                                                                        if (e.key == "Enter") {
+                                                        </div>
+                                                    </div>
+                                                    {/* send message */}
+                                                    <div className="read-panel">
+                                                        <div className="media">
+                                                            <a className="pull-left">
+                                                                <Avatar size={26} icon={<UserOutlined />} style={{ marginRight: "5px" }} />
+                                                            </a>
+                                                            <div className="media-body">
+                                                                <Input.TextArea
+                                                                    value={messag}
+                                                                    rows={2}
+                                                                    onChange={(e) => setMessag(e.target.value)}
+                                                                    onKeyUp={(e) => {
+                                                                        if (e.key === "Enter" && e.shiftKey) {
+                                                                            return;
+                                                                        }
+                                                                        if (e.key === "Enter") {
                                                                             handleSendMsg()
                                                                         }
                                                                     }} />
-                                                                    <Divider />
-                                                                    <Button className="mr5" type="primary" onClick={handleSendMsg}>Gửi</Button>
+                                                                <Divider />
+                                                                <Button className="mr5" type="primary" onClick={handleSendMsg}>Gửi</Button>
 
-                                                                    <Upload {...props_upload} multiple customRequest={uploadFile}>
-                                                                        <Button icon={<UploadOutlined />}>Upload</Button>
-                                                                    </Upload>
-                                                                </div>
+                                                                <Upload {...props_upload} multiple customRequest={uploadFile}>
+                                                                    <Button icon={<UploadOutlined />}>Upload</Button>
+                                                                </Upload>
                                                             </div>
                                                         </div>
-
                                                     </div>
+
                                                 </div>
 
                                             </div>

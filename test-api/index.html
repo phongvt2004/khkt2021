@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API</title>
+</head>
+<body>
+    <div class="login">
+        <h2>Login</h2>
+        <p>Username</p>
+        <input type="text" name="username">
+        <p>Password</p>
+        <input type="password" name="password"><br/>
+        <button>Login</button>
+    </div>
+    <div class="question">
+        <h2>Add question</h2>
+        <select name="subject" class="subject">
+            <option value="math">Math</option>
+        </select><br/>
+        <select name="class" class="class">
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select><br/>
+        <p>Question</p>
+        <input type="text" name="question"><br/>
+        <p>A</p>
+        <input type="text" name="A"><br/>
+        <p>B</p>
+        <input type="text" name="B"><br/>
+        <p>C</p>
+        <input type="text" name="C"><br/>
+        <p>D</p>
+        <input type="text" name="D"><br/>
+        <p>Correct</p>
+        <select name="correct" id="correct">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+        <button type="submit">Add Question</button>
+    </div>
+    <div class="test">
+        <select name="subject" class="subject">
+            <option value="math">Math</option>
+        </select><br/>
+        <select name="class" class="class">
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select><br/>
+        <p>Number</p>
+        <input type="text" id="number">
+        <p>Time</p>
+        <input type="text" id="time">
+        <button type="submit">Get Test</button>
+    </div>
+    <div class="do-test">
+        <ul id="test"></ul>
+        <button type="submit">Done</button>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./main.js"></script>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
+    <script src="./notify.js"></script>
+</body>
+</html>

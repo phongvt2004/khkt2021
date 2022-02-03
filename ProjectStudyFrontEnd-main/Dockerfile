@@ -6,7 +6,6 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 COPY ./package*.json ./
 RUN yarn
-RUN yarn upgrade
 COPY . .
 RUN yarn build
 

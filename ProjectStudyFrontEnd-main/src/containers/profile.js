@@ -22,6 +22,10 @@ const Profile = (props) => {
     const [gudbad, setGudbad] = useState(true)
     const [showaddSub, setShowaddSub] = useState(false)
     const [addsubForm] = Form.useForm()
+    
+    useEffect(() => {
+        handleGetUserInfo()
+    },[])
 
     const handleGetUserInfo = () => {
         axios.get(api.api_user_info, {
@@ -31,8 +35,10 @@ const Profile = (props) => {
             }
         }).then(res => res.data)
             .then(res => {
+                console.log("check pro5", res)
                 setUserinfo(res)
             })
+        .catch(console.log)
     }
 
     const handleAddSubject = (e) => {
@@ -143,14 +149,19 @@ const Profile = (props) => {
 
                                 <div className="row">
                                     <div className="col-sm-3">
-                                        <img src={`${process.env.PUBLIC_URL}/static/images/avatar/${userinfo?.gender}.png`} className="thumbnail img-responsive" alt="" />
+                                        {
+                                            userinfo?.avatar !== ""?
+                                            <img src={userinfo?.avatar} className="thumbnail img-responsive" alt="" />
+                                            :
+                                            <img src={`${process.env.PUBLIC_URL}/static/images/avatar/${userinfo?.gender}.png`} className="thumbnail img-responsive" alt="" />
+                                        }
 
                                         <div className="mb30"></div>
 
-                                        <h5 className="subtitle">Mạng xã hội</h5>
+                                        {/* <h5 className="subtitle">Mạng xã hội</h5>
                                         <ul className="profile-social-list">
                                             <li><i className="fa fa-twitter"></i> twitter.com/{props.username}</li>
-                                        </ul>
+                                        </ul> */}
 
                                         <div className="mb30"></div>
                                     </div>

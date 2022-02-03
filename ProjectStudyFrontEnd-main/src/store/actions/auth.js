@@ -172,6 +172,7 @@ export const updateInfo = info => {
 
 export const getInfostatus = (token, username, userId) => {
     return dispatch => {
+        dispatch(authStart());
         axios.get(api.api_user_status, {
             params: {
                 username: username,

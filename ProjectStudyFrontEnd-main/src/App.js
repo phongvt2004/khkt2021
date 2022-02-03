@@ -22,7 +22,7 @@ class App extends Component {
             <AppWrapper>
                 <Router>
                     <Switch>
-                        <Route exact path="/group-test/:testid/:groupid" render={() => (
+                    <Route exact path="/group-test/:testid/:groupid" render={() => (
                             <TestLayout {...this.props}>
                                 <BaseRouter />
                             </TestLayout>
@@ -61,6 +61,8 @@ const mapStateToProps = state => {
         loading: state.loading,
         error: state.error,
         change: state.change,
+        info: state.info,
+        username: state.username,
     }
 }
 

@@ -4,9 +4,7 @@ async function connect() {
     try {
         await mongoose.connect(dbURL, {
             useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useFindAndModify: false,
-            useCreateIndex: true,
+            useUnifiedTopology: true
         });
         console.log('connect successfuly');
     } catch (error) {

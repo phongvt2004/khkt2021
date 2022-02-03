@@ -8,6 +8,7 @@ import PageHeader from '../components/pageheader'
 import { Link, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import Countdown from 'react-countdown'
+import Latex from 'react-latex';
 
 const SystemTest = (props) => {
 
@@ -26,6 +27,8 @@ const SystemTest = (props) => {
     const [subj, setSubj] = useState("")
     const [classs, setClasss] = useState(10)
     const [timee, setTimee] = useState(20)
+
+    const [otestForm] = Form.useForm()
 
     useEffect(() => {
         handleCheckOldTest()
@@ -71,8 +74,26 @@ const SystemTest = (props) => {
 
     }
 
+    const handleDeleteOldTest = () => {
+        oldTest.map(val => {
+            axios.delete(api.api_history_oldtest,
+                {
+                    params: {
+                        username: props.username,
+                        token: props.token,
+                        testId: val._id,
+                    }
+                }
+            ).then(res => {
+                handleCheckOldTest()
+            }).catch(console.log)
+        })
+
+    }
+
     const handleCheckOldTest = () => {
         setIsload(true)
+        setOldTest([])
         axios.get(api.api_history_oldtest, {
             params: {
                 username: props.username,
@@ -82,7 +103,6 @@ const SystemTest = (props) => {
             .then(res => {
                 setIsload(false)
                 setOldTest(res)
-                console.log("oldtest", res)
             })
             .catch(console.log)
     }
@@ -178,7 +198,8 @@ const SystemTest = (props) => {
         })
             .then(res => res.data)
             .then(res => {
-                console.log(res)
+                setNopbai(false)
+                setCdtime(Date.now() + res.time * 60000 + 5000)
                 setTestlist(res.questionList)
                 const test_data = []
                 res.questionList.map(val => {
@@ -188,7 +209,6 @@ const SystemTest = (props) => {
                     })
                 })
                 setAnswer(test_data)
-                setCdtime(Date.now() + res.time * 60000 + 3000)
                 setIsload(false)
             })
             .catch(e => {
@@ -216,7 +236,9 @@ const SystemTest = (props) => {
                                                     <Typography.Title level={3}>Bài kiểm tra đang làm giở</Typography.Title>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <Form onFinish={handleContinueOldTest}>
+                                                    <Form form={otestForm}
+                                                        onFinish={handleContinueOldTest}
+                                                    >
                                                         <Form.Item labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} name="subject" label="Bài thi đang giở" rules={[{ required: true, message: 'Chọn bài thi' }]} >
                                                             <Select>
                                                                 {
@@ -230,10 +252,8 @@ const SystemTest = (props) => {
                                                             <Row>
                                                                 <Col span={8}><Button type="primary" htmlType="submit">Tiếp tục</Button></Col>
                                                                 <Col span={8}><Button type="primary" onClick={handleCheckOldTest}>Tải lại</Button></Col>
-                                                                <Col span={8}><Button type="primary" htmlType="submit">Xoá</Button></Col>
+                                                                <Col span={8}><Button type="primary" onClick={handleDeleteOldTest}>Xoá hết</Button></Col>
                                                             </Row>
-
-
                                                         </Form.Item>
                                                     </Form>
                                                 </div>
@@ -248,7 +268,7 @@ const SystemTest = (props) => {
                                                     </div>
                                                     <div class="modal-body">
                                                         <Form form={testinfoForm} onFinish={handleCreateTest}>
-                                                            <Form.Item labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} name="class" label="Lớp" rules={[{ required: true, message: 'Chọn khối, lớp' }]}>
+                                                            {/* <Form.Item labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} name="class" label="Lớp" rules={[{ required: true, message: 'Chọn khối, lớp' }]}>
                                                                 <Select>
                                                                     {
                                                                         api.classes.map((val) => (
@@ -256,7 +276,7 @@ const SystemTest = (props) => {
                                                                         ))
                                                                     }
                                                                 </Select>
-                                                            </Form.Item>
+                                                            </Form.Item> */}
                                                             <Form.Item labelCol={{ span: 6 }} wrapperCol={{ span: 14 }} name="subject" label="Môn học" rules={[{ required: true, message: 'Chọn môn học' }]}>
                                                                 <Select>
                                                                     {
@@ -291,9 +311,7 @@ const SystemTest = (props) => {
                                                     </div>
                                                     <div class="modal-header">
                                                         <Typography.Title level={3}>
-                                                            {
-                                                                testlist[index]?.question
-                                                            }
+                                                            <Latex>{`${testlist[index]?.question}`}</Latex>
                                                         </Typography.Title>
                                                         {
                                                             testlist[index]?.image[0] !== "" ?
@@ -305,10 +323,10 @@ const SystemTest = (props) => {
                                                     <div class="modal-body">
                                                         <Radio.Group onChange={(e) => handleSetAnswer(testlist[index]?._id, e.target.value)} defaultValue={value} value={answer.find(x => x.questionId === testlist[index]?._id)?.answer}>
                                                             <Row>
-                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "A"} value="A">A. {testlist[index]?.A}</Radio></Col>
-                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "B"} value="B">B. {testlist[index]?.B}</Radio></Col>
-                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "C"} value="C">C. {testlist[index]?.C}</Radio></Col>
-                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "D"} value="D">D. {testlist[index]?.D}</Radio></Col>
+                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "A"} value="A">A. <Latex>{`${testlist[index]?.A}`}</Latex></Radio></Col>
+                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "B"} value="B">B. <Latex>{`${testlist[index]?.B}`}</Latex></Radio></Col>
+                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "C"} value="C">C. <Latex>{`${testlist[index]?.C}`}</Latex></Radio></Col>
+                                                                <Col span={12}><Radio checked={answer.find(x => x.questionId === testlist[index]?._id)?.answer === "D"} value="D">D. <Latex>{`${testlist[index]?.D}`}</Latex></Radio></Col>
                                                             </Row>
 
                                                         </Radio.Group>

@@ -1,14 +1,18 @@
 FROM node:14-alpine
 
-WORKDIR /project/src/app
+WORKDIR /usr/src/app
 
-COPY package.json /project/src/app/package.json
+COPY package.json yarn.lock ./
+
+ENV PORT=443
 
 RUN yarn install
-RUN yarn upgrade
 
-COPY src/* /project/src/app/
+RUN yarn add fs-extra
 
-EXPOSE 8080
+COPY . .
 
-CMD ["yarn", "start"]
+EXPOSE 80
+EXPOSE 443
+
+CMD ["node", "index.js"]

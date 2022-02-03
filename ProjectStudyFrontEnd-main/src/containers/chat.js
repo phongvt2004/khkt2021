@@ -106,7 +106,7 @@ const Chat = (props) => {
     const messagesEndRef = useRef(null)
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
 
     useEffect(() => {
@@ -115,7 +115,7 @@ const Chat = (props) => {
             handleGetAllChat()
             handlGetTestList()
         }
-    }, [imin]);
+    }, [imin, location]);
 
     const handleGetAllChat = () => {
         axios.get(api.api_chat, {
@@ -127,14 +127,13 @@ const Chat = (props) => {
             }
         }).then(res => res.data)
             .then(res => {
-                //console.log(res)
+                console.log(res)
                 res.reverse()
                 setData(res)
                 scrollToBottom();
             })
             .catch(console.log)
     }
-
 
     useEffect(() => {
         if (!socket) return;
@@ -235,6 +234,7 @@ const Chat = (props) => {
     const [picktest] = Form.useForm()
 
     const handlGetTestList = () => {
+        setTestlist([])
         axios.get(api.api_group_test_all, {
             params: {
                 username: props.username,
@@ -427,6 +427,7 @@ const Chat = (props) => {
 
                                                 {/* messages */}
                                                 <div style={{ height: "48vh", overflowY: "auto" }} id="msges">
+                                                    
                                                     {
                                                         data.map((val) => (
                                                             <div className="read-panel">
@@ -441,7 +442,7 @@ const Chat = (props) => {
                                                                     </a>
                                                                     <div className="media-body">
                                                                         <span className="media-meta pull-right">{val.time}</span>
-                                                                        <h4 className="text-primary">{JSON.parse(val.sender).fullname}</h4>
+                                                                        <h4 className="text-primary"><Link to={`/user/${val.sender}`}>{JSON.parse(val.sender).fullname}</Link></h4>
                                                                     </div>
                                                                 </div>
 
@@ -464,9 +465,9 @@ const Chat = (props) => {
                                                             </div>
                                                         ))
                                                     }
-                                                    <div ref={messagesEndRef} />
+                                                    
                                                 </div>
-
+                                                <div ref={messagesEndRef} />
                                                 {/* send message */}
                                                 <div className="read-panel">
                                                     <div className="media">

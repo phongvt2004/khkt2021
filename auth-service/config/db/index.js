@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
-const dbType = process.env.DB_TYPE || 'local';
-const dbHost = process.env.DB_HOST || 'localhost';
-const dbPort = process.env.DB_PORT || 27017;
-const dbName = process.env.DB_NAME || 'project';
-const dbUsername = process.env.DB_USERNAME || 'username';
-const dbPassword = process.env.DB_PASSWORD || 'password';
-const dbURL = dbType === 'local' ? `mongodb://${dbHost}:${dbPort}` :  `mongodb+srv://${dbUsername}:${dbPassword}@${dbHost}/${dbName}?retryWrites=true&w=majority` 
+const dbURL = process.env.DB_URL 
 async function connect() {
     try {
         await mongoose.connect(dbURL, {
