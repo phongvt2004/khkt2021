@@ -37,3 +37,4 @@ badAt: array => Môn học chưa tốt
 post: /api/auth/register => đăng kí
 post: /api/auth/login => Đăng nhập
 get: /api/auth/login => Đăng xuất
+# khkt2021
